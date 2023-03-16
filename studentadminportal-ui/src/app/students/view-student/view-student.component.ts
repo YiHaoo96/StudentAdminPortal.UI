@@ -33,6 +33,8 @@ export class ViewStudentComponent implements OnInit {
     },
   };
   genderList: Gender[] = [];
+  isNewStudent = false;
+  header = '';
 
   constructor(
     private readonly studentService: StudentService,
@@ -46,12 +48,18 @@ export class ViewStudentComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.studentId = params.get('id');
 
-      if (!!this.studentId)
-        this.studentService
-          .getStudent(this.studentId)
-          .subscribe((successResponse) => {
-            this.student = successResponse;
-          });
+      if (!!this.studentId) {
+        this.isNewStudent =
+          this.studentId.toLowerCase() === 'Add'.toLowerCase() ? true : false;
+        this.header = this.isNewStudent ? 'Add New Student' : 'Edit Student';
+
+        if (!this.isNewStudent)
+          this.studentService
+            .getStudent(this.studentId)
+            .subscribe((successResponse) => {
+              this.student = successResponse;
+            });
+      }
 
       this.genderService.getGenderList().subscribe((successResponse) => {
         this.genderList = successResponse;
@@ -59,17 +67,36 @@ export class ViewStudentComponent implements OnInit {
     });
   }
 
-  onUpdate() {
-    this.studentService.updateStudent(this.student.id, this.student).subscribe(
-      (successResponse) => {
-        this.snackBar.open('Student updated successfully.', undefined, {
-          duration: 2000,
-        });
-      },
-      (errorResponse) => {
-        console.log(errorResponse);
-      }
-    );
+  onSave() {
+    if (this.isNewStudent) {
+      this.studentService.addStudent(this.student).subscribe(
+        (successResponse) => {
+          this.snackBar.open('Student added successfully.', undefined, {
+            duration: 2000,
+          });
+
+          setTimeout(() => {
+            this.router.navigateByUrl(`students/${successResponse.id}`);
+          }, 2000);
+        },
+        (errorResponse) => {
+          console.log(errorResponse);
+        }
+      );
+    } else {
+      this.studentService
+        .updateStudent(this.student.id, this.student)
+        .subscribe(
+          (successResponse) => {
+            this.snackBar.open('Student updated successfully.', undefined, {
+              duration: 2000,
+            });
+          },
+          (errorResponse) => {
+            console.log(errorResponse);
+          }
+        );
+    }
   }
 
   onDelete() {
@@ -88,4 +115,6 @@ export class ViewStudentComponent implements OnInit {
       }
     );
   }
+
+  onAdd() {}
 }
