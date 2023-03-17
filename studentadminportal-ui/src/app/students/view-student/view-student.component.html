@@ -144,6 +144,29 @@
         </div>
       </form>
     </div>
-    <div class="col-xs-6"></div>
+    <div class="col-xs-6">
+      <div class="row center-xs">
+        <div class="image-container">
+          <img [src]="displayProfileImageUrl" alt="Profile Image" />
+        </div>
+      </div>
+      <div class="row" *ngIf="!isNewStudent">
+        <div class="col-xs-12 row center-xs mt-1">
+          <input
+            hidden
+            #imageUpload
+            (change)="onUploadImage($event)"
+            type="file"
+          />
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="imageUpload.click()"
+          >
+            Change Image
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
