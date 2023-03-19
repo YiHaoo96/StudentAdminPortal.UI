@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Gender } from 'src/app/models/ui-models/gender.model';
@@ -37,6 +38,8 @@ export class ViewStudentComponent implements OnInit {
   header = '';
   displayProfileImageUrl = '';
 
+  @ViewChild('studentDetailsForm') studentDetailsForm?: NgForm;
+
   constructor(
     private readonly studentService: StudentService,
     private readonly route: ActivatedRoute,
@@ -71,6 +74,8 @@ export class ViewStudentComponent implements OnInit {
   }
 
   onSave() {
+    if (!this.studentDetailsForm?.form.valid) return;
+
     if (this.isNewStudent) {
       this.studentService.addStudent(this.student).subscribe(
         (successResponse) => {
